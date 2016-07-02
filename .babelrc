@@ -1,0 +1,14 @@
+{
+  "presets": [
+    "babel-polyfill",
+    "es2015",
+    "react",
+    "stage-0"
+  ],
+  "plugins": ["transform-runtime"],
+  "env": {
+    "development": {
+      "presets": ["react-hmre"]
+    }
+  }
+}
