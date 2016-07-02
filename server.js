@@ -1,5 +1,6 @@
 import boot, {BOOT} from 'redux-boot'
 import expressModule, {HTTP_REQUEST} from 'redux-boot-express'
+import serverModule from './modules/server'
 
 const initialState = {}
 
@@ -10,19 +11,22 @@ const exampleModule = {
         ...state,
         foo: action.payload
       }
-    },
-    [HTTP_REQUEST]: (state, action) => {
+    }
+  },
+  middleware: {
+    [HTTP_REQUEST]: store => next => action => {
 
-      console.log(action.request)
+      console.log(action.payload.request)
 
-      return state
+      return next(action)
     }
   }
 }
 
 const modules = [
   exampleModule,
-  expressModule
+  expressModule,
+  serverModule
 ]
 
 const app = boot(initialState, modules)
