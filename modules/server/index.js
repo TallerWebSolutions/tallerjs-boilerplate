@@ -17,25 +17,24 @@ export default {
     [HTTP_BOOT]: store => next => action => {
 
       const {httpServer} = action.payload
+      const assets = {
+        styles: {},
+        javascript: {
+          main: "/static/bundle.js"
+        }
+      }
+
+      httpServer.use('/static', express.static(path.join(__dirname, '../..', 'dist')));
 
       httpServer.use((request, response, next) => {
 
         response.send('<!doctype html>\n' +
             ReactDOM.renderToString(
-              <Html store={store}/>
+              <Html assets={assets} store={store}/>
             ));
 
         next();
       })
-
-
-      // httpServer.get('/', (req, res) => {
-      //   res.sendFile(path.resolve(__dirname + '/index.html'))
-      // })
-      //
-      // if (process.env.NODE_ENV === 'production') {
-      //   httpServer.use('/static', express.static('dist'));
-      // }
 
       return next(action)
     }

@@ -16,7 +16,7 @@ const exampleModule = {
   middleware: {
     [HTTP_REQUEST]: store => next => action => {
 
-      console.log(action.payload.request)
+      // console.log(action.payload.request)
 
       return next(action)
     }
