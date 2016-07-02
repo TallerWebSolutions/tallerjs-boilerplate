@@ -4,7 +4,8 @@ import {HTTP_BOOT, HTTP_AFTER_BOOT} from 'redux-boot-express'
 import express from 'express'
 import React from 'react'
 import ReactDOM from 'react-dom/server'
-import Html from './components/Html';
+import Html from './components/Html'
+import App from '../core/containers/App'
 
 export default {
   reducer: {
@@ -32,7 +33,7 @@ export default {
 
         response.send('<!doctype html>\n' +
             ReactDOM.renderToString(
-              <Html assets={assets} store={store}/>
+              <Html assets={assets} store={store} component={<App />}/>
             ));
 
         next();
