@@ -6,6 +6,7 @@ import React from 'react'
 import ReactDOM from 'react-dom/server'
 import Html from './components/Html'
 import App from '../core/containers/App'
+import {createAction} from 'redux-actions'
 
 export default {
   reducer: {
@@ -30,13 +31,14 @@ export default {
       httpServer.use('/static', express.static(path.join(baseDir, 'dist')));
 
       httpServer.use((request, response, next) => {
-
-        response.send('<!doctype html>\n' +
+        store.dispatch(renderServer()).then(() => {
+          response.send('<!doctype html>\n' +
             ReactDOM.renderToString(
               <Html assets={assets} store={store} component={<App />}/>
-            ));
-
-        next();
+            ))
+          
+          next()
+        })
       })
 
       return next(action)
@@ -50,3 +52,7 @@ export default {
     }
   }
 }
+
+export const renderServer = createAction('redux-boot/server/render', () => {
+  return 'foo'
+})

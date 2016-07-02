@@ -1,30 +1,16 @@
 import boot, {BOOT} from 'redux-boot'
 import expressModule, {HTTP_REQUEST} from 'redux-boot-express'
 import serverModule from './modules/server'
+import { match } from 'react-router';
+// import { syncHistoryWithStore } from 'react-router-redux';
+// import { ReduxAsyncConnect, loadOnServer } from 'redux-async-connect';
+// import createHistory from 'react-router/lib/createMemoryHistory';
+// import {Provider} from 'react-redux';
+// import getRoutes from './routes';
 
 const initialState = {}
 
-const exampleModule = {
-  reducer: {
-    [BOOT]: (state, action) => {
-      return {
-        ...state,
-        foo: action.payload
-      }
-    }
-  },
-  middleware: {
-    [HTTP_REQUEST]: store => next => action => {
-
-      // console.log(action.payload.request)
-
-      return next(action)
-    }
-  }
-}
-
 const modules = [
-  exampleModule,
   expressModule,
   serverModule
 ]

@@ -4,7 +4,7 @@ var ExtractTextPlugin = require('extract-text-webpack-plugin')
 var postcssInitial = require('postcss-initial')
 
 module.exports = {
-  // devtool: 'source-map',
+  devtool: 'source-map',
   entry: [
     './client.js'
   ],

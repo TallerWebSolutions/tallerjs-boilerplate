@@ -2,12 +2,12 @@ import React, { Component, PropTypes } from 'react'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 
-export default class App extends Component {
+export default class Home extends Component {
   render() {
     return(
-      <div>
-        {this.props.children}
-      </div>
+      <h1>
+        Homer
+      </h1>
     )
   }
 }
