@@ -4,24 +4,19 @@ import { render } from 'react-dom'
 import { Provider } from 'react-redux'
 import App from './modules/core/containers/App'
 
+import { Router, Route, IndexRoute, browserHistory } from 'react-router'
+import { syncHistoryWithStore } from 'react-router-redux'
+
+import routerModule from 'app/modules/router'
+import createRoutes from 'app/modules/core/routes'
+
 const initialState = {}
 
-const exampleModule = {
-  reducer: {
-    [BOOT]: (state, action) => {
-      return {
-        ...state,
-        foo: action.payload
-      }
-    }
-  },
-}
-
 const modules = [
-  exampleModule,
+  routerModule,
 ]
 
-const app = boot(initialState, modules)
+export const app = boot(initialState, modules)
 
 app.then(({ action, store }) => {
   // Save state in local storage.
@@ -30,9 +25,15 @@ app.then(({ action, store }) => {
   //   localStorage.setItem('state', JSON.stringify(state))
   // })
 
+  const history = syncHistoryWithStore(browserHistory, store)
+
+  const Routes = createRoutes(store)
+
   render(
     <Provider store={store}>
-      <App />
+      <Router history={history}>
+        {Routes}
+      </Router>
     </Provider>,
     document.getElementById('content')
   )

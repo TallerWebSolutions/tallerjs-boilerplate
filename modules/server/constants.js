@@ -1,0 +1,1 @@
+export const RENDER_SERVERING = 'redux-boot/server/render'
