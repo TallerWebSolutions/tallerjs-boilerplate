@@ -7,7 +7,7 @@ import ReactDOM from 'react-dom/server'
 import Html from './components/Html'
 import {createAction} from 'redux-actions'
 
-import { match, Router } from 'react-router'
+import { match, RouterContext } from 'react-router'
 import { syncHistoryWithStore } from 'react-router-redux'
 // import { ReduxAsyncConnect, loadOnServer } from 'redux-async-connect'
 import createHistory from 'react-router/lib/createMemoryHistory'
@@ -33,15 +33,12 @@ export default {
     [HTTP_BOOT]: store => next => action => {
 
       const {httpServer} = action.payload
-      const assets = {
-        styles: {},
-        javascript: {
-          main: "/static/bundle.js"
-        }
-      }
+
       const baseDir = store.getState().baseDir
 
-      httpServer.use('/static', express.static(path.join(baseDir, 'dist')))
+      if (process.env.NODE_ENV === 'production') {
+        httpServer.use('/static', express.static(path.join(baseDir, 'dist')))
+      }
 
       // Express request.
       httpServer.use((request, response, nextServer) => {
@@ -53,29 +50,57 @@ export default {
         
         // WebApp Bootstrap.
         // @TODO: create universal redux-boot app.
-        const webapp = boot({}, webappModules).then(({store}) => {
+        const webapp = boot({}, webappModules).then(webapp => {
 
           const memoryHistory = createHistory(request.originalUrl)
-          const history = syncHistoryWithStore(memoryHistory, store)
+          const history = syncHistoryWithStore(memoryHistory, webapp.store)
 
           // React Router request.
           match({
             history,
-            routes: getRoutes(store),
+            routes: getRoutes(webapp.store),
             location: request.originalUrl
           }, (error, redirectLocation, renderProps) => {
 
-            const component = (
-              <Provider store={store}>
-                <Router {...renderProps} />
-              </Provider>
-            )
+            let assets = {
+              styles: {},
+              javascript: {}
+            }
+            if (process.env.NODE_ENV === 'production') {
 
-            // Response the Express request.
-            response.send('<!doctype html>\n' +
-              ReactDOM.renderToString(
-                <Html assets={assets} store={store} component={component}/>
-              ))
+              let assets = {
+                styles: {},
+                javascript: {
+                  main: "/static/bundle.js"
+                }
+              }
+            }
+
+            if (process.env.DISABLE_SSR) {
+              
+              // Response the Express request
+              // without server side rendering.
+              response.send('<!doctype html>\n' +
+                ReactDOM.renderToString(
+                  <Html assets={assets} store={webapp.store} />
+                ))
+            }
+            else {
+
+              // Root React component.
+              const component = (
+                <Provider store={webapp.store}>
+                  <RouterContext {...renderProps} />
+                </Provider>
+              )
+
+              // Response the Express request
+              // with server side rendering.
+              response.send('<!doctype html>\n' +
+                ReactDOM.renderToString(
+                  <Html assets={assets} store={webapp.store} component={component} />
+                ))
+            }
             
             nextServer()
           })

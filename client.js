@@ -12,9 +12,14 @@ import createRoutes from 'app/modules/core/routes'
 
 const initialState = {}
 
-const modules = [
+let modules = [
   routerModule,
 ]
+
+if (process.env.NODE_ENV !== 'production') {
+  const devModule = require('./modules/sandbox/devel').default
+  modules.push(devModule)
+}
 
 export const app = boot(initialState, modules)
 
